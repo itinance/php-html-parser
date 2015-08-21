@@ -1,6 +1,8 @@
 <?php
 namespace PHPHtmlParser\Dom;
 
+use ArrayIterator;
+use IteratorAggregate;
 use PHPHtmlParser\Selector;
 use PHPHtmlParser\Exceptions\ChildNotFoundException;
 use PHPHtmlParser\Exceptions\CircularException;
@@ -14,7 +16,7 @@ use stringEncode\Encode;
  * @property string innerhtml
  * @property string text
  */
-abstract class AbstractNode {
+abstract class AbstractNode implements IteratorAggregate {
 
 	/**
 	 * Contains the tag name/type
@@ -208,6 +210,28 @@ abstract class AbstractNode {
 		}
 
 		return $this->children[$id]['node'];
+	}
+
+	/**
+	 * Returns a new array of child nodes
+	 *
+	 * @return array
+	 */
+	public function getChildren() {
+		$nodes = [];
+		foreach($this->children as $childNode) {
+			$nodes[] = $childNode['node'];
+		}
+		return $nodes;
+	}
+
+	/**
+	 * Counts children
+	 *
+	 * @return int
+	 */
+	public function countChildren() {
+		return count($this->children);
 	}
 
 	/**
@@ -672,4 +696,12 @@ abstract class AbstractNode {
 	 * @return void
 	 */
 	abstract protected function clear();
+
+	/**
+	 * @return ArrayIterator
+	 */
+	public function getIterator() {
+		return new ArrayIterator($this->getChildren());
+	}
+
 }
